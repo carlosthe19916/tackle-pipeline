@@ -30,23 +30,14 @@ jobs:
           git config user.email "<carlosthe19916@gmail.com>"
       - name: Create tag
         run: |
-          npm version --new-version ${{ github.event.inputs.release-version }} --allow-same-version --no-git-tag-version
-
-          ## Update release
-          git add .
-          git commit -m "Release ${{ github.event.inputs.release-version }}"
-          git push "https://$GITHUB_TOKEN@github.com/carlosthe19916/controls-ui.git"
-
-          ## Create tag and push
           git tag ${{ github.event.inputs.release-version }}
           git push "https://$GITHUB_TOKEN@github.com/carlosthe19916/controls-ui.git" --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: GH Release
-        id: create_release
+      - name: GH release
         uses: actions/create-release@v1.1.4
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.event.inputs.release-version }}
           release_name: Release ${{ github.event.inputs.release-version }}
           draft: false
           prerelease: false
@@ -69,14 +60,3 @@ jobs:
           dockerfile: Dockerfile
           snapshot: false
           tags: "${{ github.event.inputs.release-version }}"
-
-      - name: Prepare next version
-        run: |
-          ## Create next version
-          npm version --new-version ${{ github.event.inputs.release-version }} --no-git-tag-version
-
-          git add .
-          git commit -m "Prepare next release $nextVersion"
-          git push "https://$GITHUB_TOKEN@github.com/carlosthe19916/controls-ui.git"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
