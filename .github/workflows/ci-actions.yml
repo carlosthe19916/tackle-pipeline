@@ -22,24 +22,23 @@ jobs:
           repository: "carlosthe19916/controls-ui"
           persist-credentials: false
           fetch-depth: 0
-      - name: Git setup
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-      - name: Create tag
-        run: |
-          git tag ${{ github.event.inputs.release-version }}
-      - name: Push tag
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GH_PAT }}
-          branch: master
-          tags: true
-          repository: carlosthe19916/controls-ui
+      # - name: Git setup
+      #   run: |
+      #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     git config --local user.name "github-actions[bot]"
+      # - name: Create tag
+      #   run: |
+      #     git tag ${{ github.event.inputs.release-version }}
+      # - name: Push tag
+      #   uses: ad-m/github-push-action@v0.6.0
+      #   with:
+      #     github_token: ${{ secrets.GH_PAT }}
+      #     branch: master
+      #     tags: true
+      #     repository: carlosthe19916/controls-ui
       - name: GH release
         uses: actions/create-release@v1.1.4
         with:
-          commitish: master
           tag_name: ${{ github.event.inputs.release-version }}
           release_name: Release ${{ github.event.inputs.release-version }}
           draft: false
