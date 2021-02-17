@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release"
+        required: true
+        default: "0.1"
+      nextVersion:
+        description: "Next version"
+        required: true
+        default: "0.2"
+jobs:
+  printInputs:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Log level: ${{ github.event.inputs.release }}"
+          echo "Tags: ${{ github.event.inputs.nextVersion }}"
