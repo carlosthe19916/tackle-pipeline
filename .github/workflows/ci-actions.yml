@@ -46,6 +46,7 @@ jobs:
           prerelease: false
           owner: carlosthe19916
           repo: controls-ui
+          commitish: master
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
