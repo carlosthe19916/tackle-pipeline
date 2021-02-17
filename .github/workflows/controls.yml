@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-version:
+        description: Release version
+        default: "0.1"
+        required: true
+      next-version:
+        description: Next version
+        default: "0.2"
+        required: true
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: "carlosthe19916/poc"
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Git setup
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Set maven version
+        run: |
+          cd controls
+
+          mvn versions:set -DnewVersion="${{ github.event.inputs.release-version }}"
+          git add .
+          git commit -m "Release ${{ github.event.inputs.release-version }}"
+
+          git tag ${{ github.event.inputs.release-version }}
+      - name: Build native image
+        run: |
+          cd controls
+
+          mvn package -Pnative \
+          -Dquarkus.native.container-build=true \
+          -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3.0.0.Final-java11
+      - name: Push to Quay.io
+        uses: elgohr/Publish-Docker-Github-Action@3.02
+        with:
+          registry: quay.io
+          name: carlosthe19916/controls
+          username: ${{ secrets.QUAYIO_USERNAME }}
+          password: ${{ secrets.QUAYIO_PASSWORD }}
+          dockerfile: src/main/docker/Dockerfile.native
+          snapshot: false
+          tags: "${{ github.event.inputs.release-version }}"
+          workdir: controls
+
+      - name: Prepare next version
+        run: |
+          mvn versions:set -DnewVersion="${{ github.event.inputs.next-version }}"
+          git add .
+          git commit -m "Prepare next release ${{ github.event.inputs.next-version }}"
+      - name: Push git changes to GH
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GH_PAT }}
+          branch: main
+          tags: true
+          repository: carlosthe19916/poc
+      - name: GH release
+        uses: actions/create-release@v1.1.4
+        with:
+          tag_name: refs/tags/${{ github.event.inputs.release-version }}
+          release_name: Release refs/tags/${{ github.event.inputs.release-version }}
+          draft: false
+          prerelease: false
+          owner: carlosthe19916
+          repo: poc
+          commitish: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
