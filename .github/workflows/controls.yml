@@ -1,4 +1,4 @@
-name: Release
+name: Tackle controls
 
 on:
   workflow_dispatch:

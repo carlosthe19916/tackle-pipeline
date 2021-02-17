@@ -1,4 +1,4 @@
-name: Release
+name: Tackle UI
 
 on:
   workflow_dispatch:
