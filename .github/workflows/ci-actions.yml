@@ -32,7 +32,7 @@ jobs:
         run: |
           ls
           git tag ${{ github.event.inputs.release-version }}
-          git push "https://$GH_PAT@github.com/carlosthe19916/controls-ui.git" --tags
+          git push "https://${{ env.GH_PAT }}@github.com/carlosthe19916/controls-ui.git" --tags
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
