@@ -30,12 +30,8 @@ jobs:
           git config user.email "<carlosthe19916@gmail.com>"
       - name: Create tag
         run: |
-          ls
           git tag ${{ github.event.inputs.release-version }}
-          git push "https://${{ env.GH_PAT }}@github.com/carlosthe19916/controls-ui.git" --tags
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push "https://${{secrets.GH_PAT}}@github.com/carlosthe19916/controls-ui.git" --tags
       - name: GH release
         uses: actions/create-release@v1.1.4
         with:
