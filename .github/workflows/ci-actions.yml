@@ -33,7 +33,7 @@ jobs:
           git tag ${{ github.event.inputs.release-version }}
           git push "https://$GITHUB_TOKEN@github.com/carlosthe19916/controls-ui.git" --tags
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       - name: GH release
         uses: actions/create-release@v1.1.4
         with:
@@ -44,7 +44,7 @@ jobs:
           owner: carlosthe19916
           repo: controls-ui
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Build
         run: |
