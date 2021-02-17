@@ -1,20 +1,88 @@
-name: CI
+name: Release
 
 on:
   workflow_dispatch:
     inputs:
-      release:
-        description: "Release"
-        required: true
+      release-version:
+        description: Release version
         default: "0.1"
-      nextVersion:
-        description: "Next version"
         required: true
+      next-version:
+        description: Next version
         default: "0.2"
+        required: true
+
 jobs:
-  printInputs:
+  release-ui:
+    name: Release UI
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "Log level: ${{ github.event.inputs.release }}"
-          echo "Tags: ${{ github.event.inputs.nextVersion }}"
+      - uses: actions/checkout@v2
+        with:
+          repository: "carlosthe19916/controls-ui"
+          path: controls-ui
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Git setup
+        run: |
+          git config user.name "Carlos Feria"
+          git config user.email "<carlosthe19916@gmail.com>"
+      - name: Create tag
+        run: |
+          cd controls-ui
+          npm version --new-version ${{ github.event.inputs.release-version }} --allow-same-version --no-git-tag-version
+
+          ## Update release
+          git add .
+          git commit -m "Release ${{ github.event.inputs.release-version }}"
+          git push "https://$GITHUB_TOKEN@github.com/carlosthe19916/controls-ui.git"
+
+          ## Create tag and push
+          git tag ${{ github.event.inputs.release-version }}
+          git push "https://$GITHUB_TOKEN@github.com/carlosthe19916/controls-ui.git" --tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: GH Release
+        id: create_release
+        uses: actions/create-release@v1.1.4
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.event.inputs.release-version }}
+          draft: false
+          prerelease: false
+          owner: carlosthe19916
+          repo: controls-ui
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: |
+          cd controls-ui
+          yarn install
+          yarn build
+      - name: Push to Quay.io
+        uses: elgohr/Publish-Docker-Github-Action@3.02
+        with:
+          registry: quay.io
+          name: carlosthe19916/controls-ui
+          username: ${{ secrets.QUAYIO_USERNAME }}
+          password: ${{ secrets.QUAYIO_PASSWORD }}
+          dockerfile: Dockerfile
+          snapshot: false
+          tags: "${{ github.event.inputs.release-version }}"
+          workdir: controls-ui
+
+      - name: Prepare next version
+        run: |
+          cd controls-ui
+
+          ## Create next version
+          npm version --new-version ${{ github.event.inputs.release-version }} --no-git-tag-version
+
+          git add .
+          git commit -m "Prepare next release $nextVersion"
+          git push "https://$GITHUB_TOKEN@github.com/carlosthe19916/controls-ui.git"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
