@@ -32,8 +32,6 @@ jobs:
 
       - name: Set maven version
         run: |
-          cd controls
-
           mvn versions:set -DnewVersion="${{ github.event.inputs.release-version }}"
           git add .
           git commit -m "Release ${{ github.event.inputs.release-version }}"
