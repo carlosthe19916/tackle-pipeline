@@ -1,4 +1,4 @@
-name: Tackle UI
+name: UI
 
 on:
   workflow_dispatch:

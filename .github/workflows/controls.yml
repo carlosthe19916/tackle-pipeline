@@ -1,4 +1,4 @@
-name: Tackle controls
+name: Controls
 
 on:
   workflow_dispatch:
