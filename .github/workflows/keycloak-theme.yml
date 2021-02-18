@@ -58,7 +58,7 @@ jobs:
           github_token: ${{ secrets.GH_PAT }}
           branch: master
           tags: true
-          repository: carlosthe19916/poc
+          repository: carlosthe19916/controls-keycloak-theme
       - name: GH release
         uses: actions/create-release@v1.1.4
         with:
