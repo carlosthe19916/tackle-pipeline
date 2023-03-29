@@ -46,7 +46,7 @@ jobs:
           -Dquarkus.native.container-build=true \
           -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3.0.0.Final-java11
       - name: Push to Quay.io
-        uses: elgohr/Publish-Docker-Github-Action@3.02
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           registry: quay.io
           name: carlosthe19916/controls
@@ -109,7 +109,7 @@ jobs:
           yarn install
           yarn build
       - name: Push to Quay.io
-        uses: elgohr/Publish-Docker-Github-Action@3.02
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           registry: quay.io
           name: carlosthe19916/controls-ui
